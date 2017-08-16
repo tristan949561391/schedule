@@ -1,0 +1,7 @@
+/**
+ * import
+ */
+const start = require('../command');
+start().then(() => {
+    console.log('schedule start')
+})
