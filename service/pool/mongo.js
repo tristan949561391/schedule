@@ -2,6 +2,7 @@
 const GenericPool = require('generic-pool');
 const MongoClient = require('mongodb').MongoClient;
 const conf_mongo = require('../../conf/index').mongo;
+let pool = null;
 
 const factory = {
     create: function () {
@@ -30,4 +31,9 @@ const opts = {
     max: 10, // maximum size of the pool 
     min: 2 // minimum size of the pool 
 };
-module.exports = GenericPool.createPool(factory, opts)
+module.exports.getPool = () => {
+    if (!pool) {
+        pool = GenericPool.createPool(factory, opts)
+    }
+    return pool;
+};
