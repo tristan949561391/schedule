@@ -1,18 +1,34 @@
 const Mongo = require('../../pool/mongo');
 const config = require('./config');
 const HttpRequest = require('request-promise');
-const RequestNormal = require('request');
 const TimeFormat = require('moment');
-const GridFSBucket = require('mongodb').GridFSBucket;
-const UUID = require('uuid');
 
 module.exports = async () => {
-  let pagenum = 1;
+  console.log('定时任务开始');
   const client = await Mongo.acquire();
-  const collection = client.collection("funnys");
-  await save_datasource(collection, pagenum);
+  const collection = client.collection("jokes");
+  await save_datasource(collection);
   Mongo.release(client);
+  console.log('定时任务结束');
 };
+
+async function save_datasource(collection) {
+    let nowPage=1;
+    let allPages=0;
+    do{
+        let data = await query_datasource(nowPage);
+        if(data&&0===data.showapi_res_code){
+            console.log("一共有"+data.showapi_res_body.allNum+"条数据", data.showapi_res_body.allPages+'页',"当前是第"+nowPage+"页");
+            allPages= data.showapi_res_body.allPages;
+            let isSave=await save_List(collection, data.showapi_res_body.contentlist);
+            if(!isSave){
+                break;
+            }
+            console.log('这些包存成功')
+        }
+        nowPage++;
+    }while (nowPage<=allPages);
+}
 
 /**
  * 获取json数据
@@ -21,57 +37,42 @@ module.exports = async () => {
  */
 async function query_datasource(pagenum) {
   const options = {
-    url: `${config.uri}?pagenum=${pagenum}&pagesize=20&sort=addtime`,
+    url: `${config.uri}?page=${pagenum}&maxResult=${config.step}&time=1950-01-01`,
     headers: {
       "Authorization": `APPCODE ${config.AppCode}`
     }
   };
-  let response = null;
   try {
-    response = await HttpRequest(options);
-  } catch (e) {
-    throw new Error('-< request error')
+      let response = await HttpRequest(options);
+      return JSON.parse(response);
+  }catch (e){
+      return null;
   }
-  let data = JSON.parse(response);
-  return data
 }
-
-async function save_datasource(collection, pagenum) {
-  try {
-    let data = await query_datasource(pagenum);
-    console.log(data.result.pagenum, data.result.pagesize, data.result.total);
-    await save_List(collection, data.result.list);
-    if (data.result.list.length < 20) {
-      return;
-    }
-  } catch (e) {
-    console.log(e);
-    if (e.message.startsWith('-<')) {
-      return;
-    }
-  }
-  await save_datasource(collection, pagenum + 1);
-}
-
 
 async function save_List(collection, jokerList) {
+  let fcount=0;
   for (let i in jokerList) {
-    let time = new TimeFormat(jokerList[i].addtime, "YYYY-MM-DD HH:mm:ss");
+    let time = new TimeFormat(jokerList[i].ct, "YYYY-MM-DD HH:mm:ss");
     let joker = new Object();
+    joker.title=jokerList[i].title;
     joker.create_time = time._d;
-    joker.content = jokerList[i].content;
-    joker.unique = jokerList[i].url;
-    if (jokerList[i].pic !== '') {
-      joker.pics = [jokerList[i].pic];
-      joker.type = 'PIC';
-    } else {
-      joker.type = "TEXT"
-    }
+    joker.unique = jokerList[i].img;
+    joker.pics = [jokerList[i].img];
+    joker.type = 2;
     let data = await collection.findOne({unique: joker.unique});
     if (data) {
-      throw new Error('-< have saved')
+      console.log('这条已经被保存了,跳过');
+      fcount++;
+      continue;
     }
     await collection.insertOne(joker);
+  }
+  if(fcount===jokerList){
+      console.log('这一页都被保存了');
+      return false
+  }else {
+      return true;
   }
 }
 
