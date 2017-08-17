@@ -10,7 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "generic-pool": "^3.1.7",
+    "moment": "^2.18.1",
     "mongodb": "^2.2.31",
-    "node-schedule": "^1.2.4"
+    "node-schedule": "^1.2.4",
+    "qiniu": "^7.0.6",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1",
+    "uuid": "^3.1.0"
   }
 }
