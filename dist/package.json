@@ -6,7 +6,7 @@
   "scripts": {
     "forever": "forever start -a -l  /logs/forever.log -o /logs/out.log -e err.log bin/run",
     "stop":"forever stop bin/run",
-    "upload": "pscp -pw Tristan201314 -r schedules root@47.88.172.205:/schedule/"
+    "upload": "pscp -pw Tristan201314 -r dist/ root@47.88.172.205:/schedule/"
   },
   "author": "",
   "license": "ISC",
