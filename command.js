@@ -6,7 +6,7 @@ const ali_joke_showapi_picJoke = require('./schedules/ali-joke.showapi.com.picJo
 const ali_joke_showapi_textJoke = require('./schedules/ali-joke.showapi.com.textJoke/schedule');
 const api_laifudao_tupian = require('./schedules/api.laifudao.com.tupian/schedule');
 const api_laifudao_xiaohua = require('./schedules/api.laifudao.com.xiaohua/schedule');
-
+const www_xxhh_com_tag_gif = require('./schedules/www.xxhh.com.tag.gif/schedule');
 
 function start() {
   //动态图
@@ -19,6 +19,8 @@ function start() {
   api_laifudao_tupian();
   //来福岛笑话
   api_laifudao_xiaohua();
+  //嘻嘻哈哈
+  www_xxhh_com_tag_gif();
 }
 
 module.exports = start;

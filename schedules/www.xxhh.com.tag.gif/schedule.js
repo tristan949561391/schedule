@@ -7,18 +7,20 @@ const moment = require('moment');
 
 module.exports = () => {
   let job = schedule.scheduleJob(config.schedule, async () => {
-      console.log('ali_joke_showapi_gifJoke 获取图片任务开始', moment(new Date()).format('MM-DD HH:mm'));
+      console.log('www.xxhh.com.tag.gif 获取gif任务开始', moment(new Date()).format('MM-DD HH:mm'));
       const client = await Mongo.acquire();
       try {
         await Service(client);
       } catch (e) {
         console.log(e)
+      } finally {
+        Mongo.release(client);
+        console.log('www.xxhh.com.tag.gif 获取gif任务结束', moment(new Date()).format('MM-DD HH:mm'));
       }
-      Mongo.release(client);
-      console.log('ali_joke_showapi_gifJoke 获取图片任务结束', moment(new Date()).format('MM-DD HH:mm'));
     }
   );
 };
+
 
 
 

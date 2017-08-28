@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "package":"webpack",
     "forever": "forever start -a -l  /logs/forever.log -o /logs/out.log -e err.log bin/run",
-    "stop":"forever stop bin/run",
-    "upload": "pscp -pw Tristan201314 -r schedules root@47.88.172.205:/schedule/"
+    "stop": "forever stop bin/run",
+    "upload": "pscp -pw Tristan201314 -r dist/ root@47.88.172.205:/schedule/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
     "generic-pool": "^3.1.7",
     "moment": "^2.18.1",
     "mongodb": "^2.2.31",
@@ -18,5 +20,8 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "webpack": "^3.5.5"
   }
 }
